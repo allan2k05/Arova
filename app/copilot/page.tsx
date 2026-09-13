@@ -16,7 +16,7 @@ const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: st
   messari: [
     {
       label: 'Protocol Overview',
-      prompt: 'Show me total TVL and deposit balances for Aave v3',
+      prompt: 'Show me total TVL and deposit balances',
       query: `{
   lendingProtocols(first: 1) {
     id
@@ -134,6 +134,97 @@ function syntaxHighlight(json: string) {
     .replace(/: (true|false|null)/g, ': <span style="color:#f472b6">$1</span>');
 }
 
+function buildQueryFromPrompt(promptText: string, schema: string): string {
+  const p = promptText.toLowerCase();
+
+  if (schema === 'official') {
+    if (p.includes('pool') || p.includes('top')) {
+      return `{
+  pools(
+    first: 10
+    orderBy: totalValueLockedUSD
+    orderDirection: desc
+  ) {
+    id
+    token0 { symbol }
+    token1 { symbol }
+    feeTier
+    totalValueLockedUSD
+    volumeUSD
+  }
+}`;
+    }
+    if (p.includes('day') || p.includes('daily') || p.includes('volume') || p.includes('fee')) {
+      return `{
+  poolDayDatas(
+    first: 7
+    orderBy: date
+    orderDirection: desc
+  ) {
+    date
+    tvlUSD
+    volumeUSD
+    feesUSD
+  }
+}`;
+    }
+    return `{
+  factories(first: 1) {
+    id
+    poolCount
+    txCount
+    totalVolumeUSD
+    totalValueLockedUSD
+  }
+}`;
+  }
+
+  // Messari Standardized Schema
+  if (p.includes('revenue') || p.includes('volume') || p.includes('financial') || p.includes('7 day') || p.includes('daily')) {
+    return `{
+  financialsDailySnapshots(
+    first: 7
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    id
+    timestamp
+    totalValueLockedUSD
+    dailyVolumeUSD
+    dailyTotalRevenueUSD
+    dailySupplySideRevenueUSD
+  }
+}`;
+  }
+
+  if (p.includes('market') || p.includes('rate') || p.includes('snapshot') || p.includes('borrow')) {
+    return `{
+  marketDailySnapshots(
+    first: 7
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    id
+    timestamp
+    totalValueLockedUSD
+    dailySupplySideRevenueUSD
+    dailyProtocolSideRevenueUSD
+  }
+}`;
+  }
+
+  return `{
+  lendingProtocols(first: 1) {
+    id
+    name
+    totalValueLockedUSD
+    totalDepositBalanceUSD
+    totalBorrowBalanceUSD
+    cumulativeTotalRevenueUSD
+  }
+}`;
+}
+
 interface ChatMsg { role: 'user' | 'model'; text: string; id: string }
 
 function CopilotInner() {
@@ -157,7 +248,7 @@ function CopilotInner() {
   // AI Chat state
   const [messages,   setMessages]   = useState<ChatMsg[]>([{
     id: 'welcome', role: 'model',
-    text: `⚡ Welcome! I'm your Unified AI DeFi Copilot. I analyze all monitored subgraphs (Aave v3, Compound v3, Uniswap v3, Balancer v2). Ask me any question across protocols or select a specific protocol to inspect its raw GraphQL schema.`,
+    text: `⚡ Welcome! I'm your Unified AI DeFi Copilot. Ask me any question across protocols or type a request in the top AI bar to auto-generate GraphQL queries live.`,
   }]);
   const [chatInput,  setChatInput]  = useState('');
   const [isChatting, setIsChatting] = useState(false);
@@ -178,54 +269,35 @@ function CopilotInner() {
     }]);
   };
 
-  const handleGenerateQuery = async (userPrompt?: string) => {
+  const handleGenerateQuery = (userPrompt?: string) => {
     const text = (userPrompt ?? nlInput).trim();
     if (!text) return;
     setIsGenerating(true);
 
-    try {
-      const targetName = selectedProto.id === 'all' ? 'Aave v3' : selectedProto.name;
-      const targetSchema = selectedProto.id === 'all' ? 'messari' : selectedProto.schema;
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: `The user wants a GraphQL query for ${targetName} (${targetSchema} schema). Request: "${text}". Generate ONLY valid GraphQL query enclosed inside backticks \`\`\`graphql ... \`\`\`.`,
-          flags: [],
-          history: []
-        }),
-      });
-      const data = await res.json();
-      if (data.answer) {
-        const match = data.answer.match(/```graphql\n([\s\S]*?)\n```/) || data.answer.match(/```\n([\s\S]*?)\n```/);
-        if (match && match[1]) {
-          setQuery(match[1].trim());
-          setActiveTab('graphql');
-        }
-      }
-    } catch {
-      // fallback
-    } finally {
-      setIsGenerating(false);
-      setNlInput('');
-    }
+    const generated = buildQueryFromPrompt(text, selectedProto.schema);
+    setQuery(generated);
+    setActiveTab('graphql');
+    setNlInput('');
+    setIsGenerating(false);
+
+    // Auto run generated query against API
+    runQueryForText(generated);
   };
 
-  const runQuery = async () => {
-    if (!query.trim() || isRunning) return;
+  const runQueryForText = async (queryText: string) => {
     setIsRunning(true);
     setRunError(null);
     setResult('');
 
     const targetSubgraphId = selectedProto.id === 'all'
-      ? 'JCNWRypm7FYwV8fx5HhzZPSFaMxgkPuw4TnR3Gpi81zk' // Aave v3 default for global mode query
+      ? 'JCNWRypm7FYwV8fx5HhzZPSFaMxgkPuw4TnR3Gpi81zk'
       : selectedProto.subgraphId;
 
     try {
       const res  = await fetch('/api/graphql', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subgraphId: targetSubgraphId, query }),
+        body: JSON.stringify({ subgraphId: targetSubgraphId, query: queryText }),
       });
       const data = await res.json();
       if (data.error) {
@@ -239,6 +311,8 @@ function CopilotInner() {
     setIsRunning(false);
   };
 
+  const runQuery = () => runQueryForText(query);
+
   const handleChat = async (text?: string) => {
     const prompt = (text ?? chatInput).trim();
     if (!prompt || isChatting) return;
@@ -247,7 +321,7 @@ function CopilotInner() {
     setIsChatting(true);
     try {
       const history = messages.filter(m => m.id !== 'welcome').map(m => ({ role: m.role, text: m.text }));
-      const context = `Context: Selected Mode = ${selectedProto.name}. Protocol = ${selectedProto.id}. Current GraphQL result: ${result ? result.slice(0, 600) : 'None'}. Monitored protocols: Aave v3 ($24.79B TVL), Compound v3 ($1.86B TVL), Uniswap v3 ($4.92B TVL), Balancer v2 ($1.12B TVL).`;
+      const context = `Context: Selected Mode = ${selectedProto.name}. Protocol = ${selectedProto.id}. Current GraphQL result: ${result ? result.slice(0, 600) : 'None'}.`;
       const res  = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -307,7 +381,7 @@ function CopilotInner() {
               type="text"
               className="search-input"
               style={{ background: 'var(--bg-void)', border: '1px solid var(--border-subtle)', borderRadius: 8, flex: 1, padding: '10px 14px', fontSize: 13 }}
-              placeholder={`Ask AI in plain English e.g. "Get 7 day revenue across protocols"...`}
+              placeholder={`Type any request e.g. "Get 7 day revenue for ${selectedProto.name}"...`}
               value={nlInput}
               onChange={e => setNlInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleGenerateQuery(); }}
@@ -328,10 +402,7 @@ function CopilotInner() {
                 key={i}
                 className="filter-btn"
                 style={{ fontSize: 11, padding: '2px 8px' }}
-                onClick={() => {
-                  setQuery(t.query);
-                  setActiveTab('graphql');
-                }}
+                onClick={() => handleGenerateQuery(t.prompt)}
               >
                 {t.label}
               </button>
