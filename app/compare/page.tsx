@@ -46,9 +46,24 @@ function formatVol(n: number) {
 }
 
 function Bar({ value, max }: { value: number; max: number }) {
+  const pct = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
   return (
-    <div style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', height: 4, marginTop: 4 }}>
-      <div style={{ height: '100%', width: `${(value / max) * 100}%`, background: 'var(--accent)' }} />
+    <div style={{
+      width: '80%',
+      maxWidth: 140,
+      height: 4,
+      background: 'rgba(255, 255, 255, 0.08)',
+      borderRadius: 2,
+      overflow: 'hidden',
+      marginTop: 6,
+    }}>
+      <div style={{
+        height: '100%',
+        width: `${pct}%`,
+        background: 'var(--color-gold)',
+        borderRadius: 2,
+        transition: 'width 0.3s ease',
+      }} />
     </div>
   );
 }
@@ -59,7 +74,18 @@ function Winner({ protos, field }: { protos: Proto[]; field: keyof Proto }) {
   return (
     <>
       {protos.map((p, i) => (
-        <div key={p.id} style={{ textAlign: 'center', padding: '12px 8px', borderRight: i < protos.length - 1 ? '1px solid var(--border)' : 'none' }}>
+        <div
+          key={p.id}
+          style={{
+            textAlign: 'center',
+            padding: '12px 16px',
+            borderLeft: '1px solid var(--border)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <div className="font-mono" style={{
             fontWeight: 600, fontSize: 14,
             color: vals[i] === max ? 'var(--severity-none)' : 'var(--text-primary)',
@@ -69,7 +95,7 @@ function Winner({ protos, field }: { protos: Proto[]; field: keyof Proto }) {
           {vals[i] === max && protos.length > 1 && (
             <div className="text-xs font-mono" style={{ color: 'var(--severity-none)', marginTop: 2 }}>▲ highest</div>
           )}
-          <Bar value={vals[i]} max={Math.max(...vals) || 1} />
+          <Bar value={vals[i]} max={max || 1} />
         </div>
       ))}
     </>
@@ -91,7 +117,7 @@ export default function ComparePage() {
   };
 
   const compared = selected.map(id => ALL_PROTOCOLS.find(p => p.id === id)!).filter(Boolean);
-  const colW = `${100 / compared.length}%`;
+  const gridCols = `180px repeat(${compared.length}, 1fr)`;
 
   const rows: { label: string; field: keyof Proto; render?: (p: Proto) => React.ReactNode }[] = [
     { label: 'Category', field: 'category', render: p => <span className="text-xs text-muted">{p.category}</span> },
@@ -143,7 +169,7 @@ export default function ComparePage() {
         {compared.length >= 1 && (
           <div className="data-table-wrap">
             {/* Header row */}
-            <div style={{ display: 'grid', gridTemplateColumns: `180px ${compared.map(() => colW).join(' ')}`, borderBottom: '1px solid var(--border)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: gridCols, borderBottom: '1px solid var(--border)' }}>
               <div style={{ padding: '14px 16px' }} />
               {compared.map(p => (
                 <div key={p.id} style={{ padding: '14px 12px', textAlign: 'center', borderLeft: '1px solid var(--border)' }}>
@@ -163,7 +189,7 @@ export default function ComparePage() {
             ].map(({ label, field }) => (
               <div
                 key={field}
-                style={{ display: 'grid', gridTemplateColumns: `180px ${compared.map(() => colW).join(' ')}`, borderBottom: '1px solid var(--border)' }}
+                style={{ display: 'grid', gridTemplateColumns: gridCols, borderBottom: '1px solid var(--border)' }}
               >
                 <div style={{ padding: '12px 16px', fontSize: 12.5, fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
                   {label}
@@ -176,7 +202,7 @@ export default function ComparePage() {
             {rows.map(row => (
               <div
                 key={row.field}
-                style={{ display: 'grid', gridTemplateColumns: `180px ${compared.map(() => colW).join(' ')}`, borderBottom: '1px solid var(--border)' }}
+                style={{ display: 'grid', gridTemplateColumns: gridCols, borderBottom: '1px solid var(--border)' }}
               >
                 <div style={{ padding: '12px 16px', fontSize: 12.5, fontWeight: 600, color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
                   {row.label}
@@ -190,7 +216,7 @@ export default function ComparePage() {
             ))}
 
             {/* Description row */}
-            <div style={{ display: 'grid', gridTemplateColumns: `180px ${compared.map(() => colW).join(' ')}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: gridCols }}>
               <div style={{ padding: '12px 16px', fontSize: 12.5, fontWeight: 600, color: 'var(--text-muted)', alignSelf: 'start', paddingTop: 16 }}>About</div>
               {compared.map((p) => (
                 <div key={p.id} style={{ padding: '14px 12px', fontSize: 12.5, color: 'var(--text-muted)', lineHeight: 1.5, borderLeft: '1px solid var(--border)' }}>
