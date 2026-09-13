@@ -237,7 +237,7 @@ export default function Home() {
                       <td style={{ textAlign: 'right' }}>
                         {flags !== null ? (
                           <span className="status-indicator">
-                            <span className={`status-dot ${hasHigh ? 'online' : 'online'}`} style={{ background: hasHigh ? 'var(--severity-high)' : flags > 0 ? 'var(--severity-medium)' : 'var(--severity-none)' }} />
+                            <span className="status-dot" style={{ background: hasHigh ? 'var(--severity-high)' : flags > 0 ? 'var(--severity-medium)' : 'var(--severity-none)' }} />
                             <span className="text-sm">{flags === 0 ? 'clean' : `${flags} signal${flags > 1 ? 's' : ''}`}</span>
                           </span>
                         ) : (

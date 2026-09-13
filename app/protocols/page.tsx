@@ -219,7 +219,7 @@ export default function ProtocolsPage() {
                   <td className="text-muted text-xs font-mono">{p.schema}</td>
                   <td>
                     <span className="status-indicator">
-                      <span className="status-dot online" />
+                      <span className="status-dot clean" />
                       <span className="text-sm">clean</span>
                     </span>
                   </td>

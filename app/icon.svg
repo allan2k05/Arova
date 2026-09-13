@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <rect x="4" y="4" width="92" height="92" rx="16" fill="#0d0e12" stroke="#e0a539" stroke-width="3"/>
+  <!-- Corner Brackets -->
+  <path d="M 16 28 V 16 H 28" stroke="#e0a539" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 72 16 H 84 V 28" stroke="#e0a539" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 16 72 V 84 H 28" stroke="#e0a539" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 72 84 H 84 V 72" stroke="#e0a539" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Waveform Signal -->
+  <path d="M 21 50 H 30 L 38 26 L 44 74 L 51 32 L 58 63 L 64 42 L 70 55 L 79 50" stroke="#e0a539" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

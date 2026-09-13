@@ -145,13 +145,13 @@ export default function ProtocolDetailPage({ params }: { params: Promise<{ id: s
             <div style={{ display: 'flex', gap: 16 }}>
               <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: 16 }}>
                 <div className="text-xs text-muted">Security score</div>
-                <div className="font-mono" style={{ fontSize: 20, fontWeight: 600, color: protocol.securityScore > 90 ? 'var(--severity-none)' : 'var(--amber)' }}>
+                <div className="font-mono" style={{ fontSize: 20, fontWeight: 600, color: protocol.securityScore > 90 ? 'var(--color-gold)' : 'var(--amber)' }}>
                   {protocol.securityScore} / 100
                 </div>
               </div>
               <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: 16 }}>
                 <div className="text-xs text-muted">Risk rating</div>
-                <div className="font-mono" style={{ fontSize: 20, fontWeight: 600, color: protocol.risk === 'Low' ? 'var(--severity-none)' : 'var(--amber)' }}>
+                <div className="font-mono" style={{ fontSize: 20, fontWeight: 600, color: protocol.risk === 'Low' ? 'var(--color-gold)' : 'var(--amber)' }}>
                   {protocol.risk}
                 </div>
               </div>
@@ -169,7 +169,7 @@ export default function ProtocolDetailPage({ params }: { params: Promise<{ id: s
 
           <div className="metric-segment">
             <div className="metric-segment-label">Supply APY</div>
-            <div className="metric-segment-value" style={{ color: 'var(--severity-none)' }}>{protocol.apy}</div>
+            <div className="metric-segment-value" style={{ color: 'var(--color-gold)' }}>{protocol.apy}</div>
             <div className="metric-segment-sub">Weighted average</div>
           </div>
 
@@ -255,7 +255,7 @@ export default function ProtocolDetailPage({ params }: { params: Promise<{ id: s
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>
                   <span className="text-muted">Audit verification</span>
-                  <span style={{ color: 'var(--severity-none)' }}>Verified clean ({protocol.auditFirm})</span>
+                  <span style={{ color: 'var(--color-gold)' }}>Verified clean ({protocol.auditFirm})</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>
                   <span className="text-muted">Schema version</span>
@@ -322,7 +322,7 @@ export default function ProtocolDetailPage({ params }: { params: Promise<{ id: s
                     padding: 12,
                     fontFamily: 'var(--mono)',
                     fontSize: 12,
-                    color: queryError ? 'var(--red)' : queryResult ? 'var(--severity-none)' : 'var(--text-muted)',
+                    color: queryError ? 'var(--red)' : queryResult ? 'var(--color-gold)' : 'var(--text-muted)',
                   }}
                 >
                   {queryError ? `// ERROR\n${queryError}` : queryResult ? queryResult : '// Click "Execute query" to fetch live data'}
@@ -344,20 +344,20 @@ export default function ProtocolDetailPage({ params }: { params: Promise<{ id: s
                 <div>
                   <div className="flex justify-between text-xs mb-1">
                     <span>Smart contract immutability & upgradeability</span>
-                    <span className="font-mono" style={{ color: 'var(--severity-none)' }}>98 / 100</span>
+                    <span className="font-mono" style={{ color: 'var(--color-gold)' }}>98 / 100</span>
                   </div>
                   <div style={{ height: 4, background: 'var(--bg-base)', border: '1px solid var(--border)' }}>
-                    <div style={{ width: '98%', height: '100%', background: 'var(--severity-none)' }} />
+                    <div style={{ width: '98%', height: '100%', background: 'var(--color-gold)' }} />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex justify-between text-xs mb-1">
                     <span>Oracle & price feed security (Chainlink integration)</span>
-                    <span className="font-mono" style={{ color: 'var(--severity-none)' }}>95 / 100</span>
+                    <span className="font-mono" style={{ color: 'var(--color-rust)' }}>95 / 100</span>
                   </div>
                   <div style={{ height: 4, background: 'var(--bg-base)', border: '1px solid var(--border)' }}>
-                    <div style={{ width: '95%', height: '100%', background: 'var(--severity-none)' }} />
+                    <div style={{ width: '95%', height: '100%', background: 'var(--color-rust)' }} />
                   </div>
                 </div>
 
@@ -379,7 +379,7 @@ export default function ProtocolDetailPage({ params }: { params: Promise<{ id: s
               </div>
               <div style={{ padding: 12, background: 'var(--bg-base)', border: '1px solid var(--border)' }}>
                 <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)' }}>{protocol.auditFirm}</div>
-                <div style={{ fontSize: 12, color: 'var(--severity-none)', marginTop: 2 }}>✓ Zero critical/high severity issues outstanding</div>
+                <div style={{ fontSize: 12, color: 'var(--color-gold)', marginTop: 2 }}>✓ Zero critical/high severity issues outstanding</div>
               </div>
             </div>
           </div>

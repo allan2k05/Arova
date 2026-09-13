@@ -28,6 +28,7 @@
   --accent-terracotta: #A52A2A;  /* Warning/Red Accent (#A52A2A) */
 
   --accent-dim: rgba(255, 206, 27, 0.12); /* Gold subtle background tint */
+  --burgundy-dim: rgba(128, 0, 32, 0.15); /* Burgundy subtle tint (kept for nav active) */
 
   /* Severity / Semantic Colors mapped to palette */
   --severity-high: #A52A2A;      /* Terracotta Red */
@@ -122,17 +123,19 @@ body {
 }
 
 .sidebar-logo-mark {
-  width: 28px;
-  height: 28px;
-  background: var(--color-gold);
-  color: #000;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
   flex-shrink: 0;
-  font-family: var(--mono);
+}
+
+.sidebar-logo-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 6px rgba(224, 165, 57, 0.25));
 }
 
 .sidebar-brand {
@@ -228,7 +231,8 @@ body {
   flex-shrink: 0;
 }
 .status-dot.online { background: var(--severity-none); }
-.status-dot.idle { background: var(--color-gold); }
+.status-dot.idle   { background: var(--color-gold); }
+.status-dot.clean  { background: var(--severity-none); }
 
 /* ── Main Content Area ─────────────────────────────────────── */
 .main-content {

@@ -84,10 +84,15 @@ export default function Sidebar() {
       {/* Logo */}
       <Link href="/" className="sidebar-logo">
         <div className="sidebar-logo-mark">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-            <polyline points="2 17 12 22 22 17"/>
-            <polyline points="2 12 12 17 22 12"/>
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="90" height="90" rx="16" fill="#0d0e12" stroke="var(--color-gold)" strokeWidth="4"/>
+            {/* Corner Brackets */}
+            <path d="M 16 28 V 16 H 28" stroke="var(--color-gold)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 72 16 H 84 V 28" stroke="var(--color-gold)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 16 72 V 84 H 28" stroke="var(--color-gold)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 72 84 H 84 V 72" stroke="var(--color-gold)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
+            {/* Waveform Signal */}
+            <path d="M 21 50 H 30 L 38 26 L 44 74 L 51 32 L 58 63 L 64 42 L 70 55 L 79 50" stroke="var(--color-gold)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
         <div>
