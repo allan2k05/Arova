@@ -5,17 +5,17 @@ import { useSearchParams } from 'next/navigation';
 import AppShell from '../components/AppShell';
 
 const PROTOCOLS = [
-  { id: 'all',         name: 'All Protocols (Unified AI)', subgraphId: 'all', schema: 'messari', icon: '🌐' },
-  { id: 'aave-v3',     name: 'Aave v3',     subgraphId: 'JCNWRypm7FYwV8fx5HhzZPSFaMxgkPuw4TnR3Gpi81zk', schema: 'messari', icon: '⚡' },
-  { id: 'compound-v3', name: 'Compound v3', subgraphId: 'AwoxEZbiWLvv6e3QdvdMZw4WDURdGbvPfHmZRc8Dpfz9', schema: 'messari', icon: '🏛️' },
-  { id: 'uniswap-v3',  name: 'Uniswap v3',  subgraphId: '5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV', schema: 'official', icon: '🦄' },
-  { id: 'balancer-v2', name: 'Balancer v2', subgraphId: '794H6CNzdGF5YfBK9nPsUgGn7EBbdJSCTjgcKPEPyFnn', schema: 'messari', icon: '⚖️' },
+  { id: 'all',         name: 'All protocols (Unified AI)', subgraphId: 'all', schema: 'messari' },
+  { id: 'aave-v3',     name: 'Aave v3',     subgraphId: 'JCNWRypm7FYwV8fx5HhzZPSFaMxgkPuw4TnR3Gpi81zk', schema: 'messari' },
+  { id: 'compound-v3', name: 'Compound v3', subgraphId: 'AwoxEZbiWLvv6e3QdvdMZw4WDURdGbvPfHmZRc8Dpfz9', schema: 'messari' },
+  { id: 'uniswap-v3',  name: 'Uniswap v3',  subgraphId: '5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV', schema: 'official' },
+  { id: 'balancer-v2', name: 'Balancer v2', subgraphId: '794H6CNzdGF5YfBK9nPsUgGn7EBbdJSCTjgcKPEPyFnn', schema: 'messari' },
 ];
 
 const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: string }[]> = {
   messari: [
     {
-      label: 'Protocol Overview',
+      label: 'Protocol overview',
       prompt: 'Show me total TVL and deposit balances',
       query: `{
   lendingProtocols(first: 1) {
@@ -29,7 +29,7 @@ const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: st
 }`,
     },
     {
-      label: 'Market Snapshots',
+      label: 'Market snapshots',
       prompt: 'Get market-level TVL and revenue snapshots for the past week',
       query: `{
   marketDailySnapshots(
@@ -47,7 +47,7 @@ const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: st
 }`,
     },
     {
-      label: 'Financial Snapshots',
+      label: 'Financial snapshots',
       prompt: 'Fetch financial daily snapshots including volume and revenue',
       query: `{
   financialsDailySnapshots(
@@ -67,7 +67,7 @@ const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: st
   ],
   official: [
     {
-      label: 'Factory Overview',
+      label: 'Factory overview',
       prompt: 'Query factory pool count and total volume for Uniswap v3',
       query: `{
   factories(first: 1) {
@@ -80,7 +80,7 @@ const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: st
 }`,
     },
     {
-      label: 'Top Pools by TVL',
+      label: 'Top pools by TVL',
       prompt: 'List top 10 pools sorted by total value locked',
       query: `{
   pools(
@@ -98,7 +98,7 @@ const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: st
 }`,
     },
     {
-      label: 'Recent Pool Day Data',
+      label: 'Recent pool day data',
       prompt: 'Get daily TVL and volume trends for recent pools',
       query: `{
   poolDayDatas(
@@ -122,17 +122,6 @@ const AI_PROMPTS = [
   'Explain the risk rating differences between Lending and DEX protocols',
   'What is the total aggregated TVL monitored across all subgraphs?',
 ];
-
-function syntaxHighlight(json: string) {
-  return json
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"(\w+)":/g, '<span style="color:#60a5fa">"$1"</span>:')
-    .replace(/: "([^"]+)"/g, ': <span style="color:#86efac">"$1"</span>')
-    .replace(/: (\d+\.?\d*)/g, ': <span style="color:#fbbf24">$1</span>')
-    .replace(/: (true|false|null)/g, ': <span style="color:#f472b6">$1</span>');
-}
 
 function buildQueryFromPrompt(promptText: string, schema: string): string {
   const p = promptText.toLowerCase();
@@ -248,7 +237,7 @@ function CopilotInner() {
   // AI Chat state
   const [messages,   setMessages]   = useState<ChatMsg[]>([{
     id: 'welcome', role: 'model',
-    text: `⚡ Welcome! I'm your Unified AI DeFi Copilot. Ask me any question across protocols or type a request in the top AI bar to auto-generate GraphQL queries live.`,
+    text: `Arova AI assistant connected. Ask questions across protocols or type a request to auto-generate GraphQL queries live.`,
   }]);
   const [chatInput,  setChatInput]  = useState('');
   const [isChatting, setIsChatting] = useState(false);
@@ -264,8 +253,8 @@ function CopilotInner() {
     setMessages([{
       id: 'welcome', role: 'model',
       text: p.id === 'all'
-        ? `Switched to Unified Cross-Protocol mode. I can compare and analyze all protocols simultaneously.`
-        : `Switched context to ${p.name}. Ask me anything about this protocol or inspect its live subgraph schema.`,
+        ? `Switched to cross-protocol mode.`
+        : `Switched context to ${p.name}. Ask anything about this protocol or inspect its subgraph schema.`,
     }]);
   };
 
@@ -280,7 +269,6 @@ function CopilotInner() {
     setNlInput('');
     setIsGenerating(false);
 
-    // Auto run generated query against API
     runQueryForText(generated);
   };
 
@@ -343,45 +331,39 @@ function CopilotInner() {
   return (
     <AppShell>
       <div className="topbar">
-        <span className="topbar-breadcrumb">AI Platform</span>
+        <span className="topbar-breadcrumb">Tools</span>
         <span className="topbar-divider">/</span>
-        <span className="topbar-title">Copilot & Live GraphQL IDE</span>
+        <span className="topbar-title">AI copilot & GraphQL IDE</span>
         <div className="topbar-actions">
           {/* Protocol selector */}
-          <div style={{ display: 'flex', gap: 6, background: 'var(--bg-raised)', border: '1px solid var(--border)', borderRadius: 8, padding: '3px' }}>
+          <div style={{ display: 'flex', gap: 4 }}>
             {PROTOCOLS.map(p => (
               <button
                 key={p.id}
-                className={`btn btn-sm${selectedProto.id === p.id ? ' btn-primary' : ' btn-ghost'}`}
-                style={{ padding: '4px 10px', borderRadius: 6 }}
+                className={`btn btn-sm ${selectedProto.id === p.id ? 'btn-primary' : 'btn-outline'}`}
+                style={{ fontSize: 11, padding: '4px 8px' }}
                 onClick={() => changeProtocol(p)}
               >
-                {p.icon} {p.name}
+                {p.name}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="page-content" style={{ padding: '20px 28px' }}>
+      <div className="page-content">
         {/* Top AI Natural Language Bar */}
-        <div className="card mb-4" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.05) 100%)', borderColor: 'var(--accent-glow)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-            <div className="ai-orb" style={{ width: 22, height: 22 }} />
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-bright)' }}>
-              AI Natural Language to GraphQL Query Generator
-            </div>
-            <span className="badge badge-blue" style={{ marginLeft: 'auto' }}>
-              {selectedProto.name}
-            </span>
+        <div className="card mb-4">
+          <div className="card-title mb-2">
+            AI natural language to GraphQL generator ({selectedProto.name})
           </div>
 
           <div style={{ display: 'flex', gap: 10 }}>
             <input
               type="text"
-              className="search-input"
-              style={{ background: 'var(--bg-void)', border: '1px solid var(--border-subtle)', borderRadius: 8, flex: 1, padding: '10px 14px', fontSize: 13 }}
-              placeholder={`Type any request e.g. "Get 7 day revenue for ${selectedProto.name}"...`}
+              className="console-input"
+              style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', flex: 1, padding: '8px 12px', fontSize: 13 }}
+              placeholder={`Type request e.g. "Get 7 day revenue"...`}
               value={nlInput}
               onChange={e => setNlInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleGenerateQuery(); }}
@@ -391,7 +373,7 @@ function CopilotInner() {
               onClick={() => handleGenerateQuery()}
               disabled={!nlInput.trim() || isGenerating}
             >
-              {isGenerating ? 'Generating...' : '✨ Generate Query'}
+              {isGenerating ? 'Generating...' : 'Generate query'}
             </button>
           </div>
 
@@ -400,7 +382,7 @@ function CopilotInner() {
             {templates.map((t, i) => (
               <button
                 key={i}
-                className="filter-btn"
+                className="btn btn-outline btn-sm"
                 style={{ fontSize: 11, padding: '2px 8px' }}
                 onClick={() => handleGenerateQuery(t.prompt)}
               >
@@ -411,108 +393,75 @@ function CopilotInner() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="tabs mb-4">
-          <button className={`tab${activeTab === 'copilot' ? ' active' : ''}`} onClick={() => setActiveTab('copilot')}>
-            🤖 Unified AI Copilot Assistant
+        <div className="flex gap-2 mb-4">
+          <button className={`btn btn-sm ${activeTab === 'copilot' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab('copilot')}>
+            AI copilot assistant
           </button>
-          <button className={`tab${activeTab === 'graphql' ? ' active' : ''}`} onClick={() => setActiveTab('graphql')}>
-            ⚡ Live Subgraph Query Engine ({selectedProto.name})
+          <button className={`tab btn btn-sm ${activeTab === 'graphql' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab('graphql')}>
+            Live GraphQL engine ({selectedProto.name})
           </button>
         </div>
 
-        {/* TAB 1: AI Copilot */}
+        {/* TAB 1: AI Copilot Console */}
         {activeTab === 'copilot' && (
-          <div style={{ maxWidth: 880, margin: '0 auto' }}>
-            <div className="card" style={{ height: 'calc(100vh - 290px)', display: 'flex', flexDirection: 'column' }}>
-              <div className="chat-panel-header">
-                <div className="chat-ai-badge">
-                  <div className="ai-orb" />
-                  <div>
-                    <div className="chat-ai-name">Arova Intelligent DeFi Assistant</div>
-                    <div className="chat-ai-status">● Connected to Subgraph Studio ({selectedProto.name})</div>
-                  </div>
+          <div className="console-panel" style={{ minHeight: 460 }}>
+            <div className="console-header">
+              <span>Arova AI copilot console</span>
+              <span className="text-xs font-mono text-muted">Active: {selectedProto.name}</span>
+            </div>
+
+            <div className="console-feed" style={{ height: 380 }}>
+              {messages.map(msg => (
+                <div key={msg.id} className="console-item">
+                  <div className="console-timestamp">{msg.role === 'user' ? '► USER PROMPT' : '✦ AROVA AGENT'}</div>
+                  <div className="console-text">{msg.text}</div>
                 </div>
-                <button
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => setMessages([{
-                    id: 'reset', role: 'model',
-                    text: `Chat reset. Ready to analyze ${selectedProto.name}.`,
-                  }])}
-                >
-                  Clear Chat
+              ))}
+              {isChatting && (
+                <div className="console-item">
+                  <div className="console-timestamp">✦ AROVA AGENT</div>
+                  <div className="console-text text-muted">Analyzing subgraph data...</div>
+                </div>
+              )}
+              <div ref={chatEnd} />
+            </div>
+
+            <div style={{ padding: '8px 12px', borderTop: '1px solid var(--border)', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {AI_PROMPTS.map((s, i) => (
+                <button key={i} className="btn btn-outline btn-sm" style={{ fontSize: 11, padding: '3px 8px' }} onClick={() => handleChat(s)}>
+                  {s}
                 </button>
-              </div>
+              ))}
+            </div>
 
-              <div className="chat-messages">
-                {messages.map(msg => (
-                  <div key={msg.id} className={`chat-msg chat-msg-${msg.role}`}>
-                    {msg.text}
-                  </div>
-                ))}
-                {isChatting && (
-                  <div className="chat-msg chat-msg-agent">
-                    <div className="chat-thinking">
-                      <div className="dot-pulse"><span /><span /><span /></div>
-                      Analyzing cross-subgraph data…
-                    </div>
-                  </div>
-                )}
-                <div ref={chatEnd} />
-              </div>
-
-              <div className="chat-suggestions">
-                {AI_PROMPTS.map((s, i) => (
-                  <button key={i} className="suggestion-chip" onClick={() => handleChat(s)}>{s}</button>
-                ))}
-              </div>
-
-              <div className="chat-input-area">
-                <div className="chat-input-row">
-                  <textarea
-                    rows={1}
-                    placeholder={`Ask AI Copilot anything across all protocols...`}
-                    value={chatInput}
-                    onChange={e => setChatInput(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChat(); }}}
-                    disabled={isChatting}
-                  />
-                  <button
-                    className="btn btn-primary btn-sm"
-                    style={{ alignSelf: 'flex-end' }}
-                    onClick={() => handleChat()}
-                    disabled={!chatInput.trim() || isChatting}
-                  >
-                    Send ➔
-                  </button>
-                </div>
-              </div>
+            <div className="console-input-row">
+              <input
+                className="console-input"
+                placeholder="Ask AI copilot question..."
+                value={chatInput}
+                onChange={e => setChatInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChat(); }}}
+                disabled={isChatting}
+              />
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => handleChat()}
+                disabled={!chatInput.trim() || isChatting}
+              >
+                Send
+              </button>
             </div>
           </div>
         )}
 
         {/* TAB 2: Live GraphQL IDE */}
         {activeTab === 'graphql' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, height: 'calc(100vh - 290px)' }}>
-            {/* Left: Query Editor */}
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="card">
               <div className="card-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span className="card-title">GraphQL Query Editor</span>
-                  <span className="badge badge-neutral">{selectedProto.name}</span>
-                </div>
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={runQuery}
-                  disabled={isRunning}
-                >
-                  {isRunning ? (
-                    <span className="scan-loading"><span className="loading-ring" /> Running…</span>
-                  ) : (
-                    <>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                      Run Query
-                    </>
-                  )}
+                <span className="card-title">GraphQL query editor ({selectedProto.name})</span>
+                <button className="btn btn-primary btn-sm" onClick={runQuery} disabled={isRunning}>
+                  {isRunning ? 'Running...' : 'Run query'}
                 </button>
               </div>
 
@@ -521,57 +470,36 @@ function CopilotInner() {
                 onChange={e => setQuery(e.target.value)}
                 spellCheck={false}
                 style={{
-                  flex: 1,
-                  background: 'var(--bg-void)',
-                  border: 'none',
+                  width: '100%',
+                  height: 320,
+                  background: 'var(--bg-base)',
+                  border: '1px solid var(--border)',
                   outline: 'none',
-                  padding: '16px',
+                  padding: 12,
                   fontFamily: 'var(--mono)',
                   fontSize: 13,
-                  color: 'var(--accent-bright)',
-                  resize: 'none',
-                  lineHeight: 1.7,
+                  color: 'var(--accent)',
+                  lineHeight: 1.6,
                 }}
               />
             </div>
 
-            {/* Right: Response Engine */}
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div className="card">
               <div className="card-header">
-                <span className="card-title">Live Response JSON</span>
-                {result && (
-                  <span className="badge badge-green">
-                    200 OK
-                  </span>
-                )}
-                {runError && <span className="badge badge-red">Error</span>}
+                <span className="card-title">Response JSON</span>
+                {result && <span style={{ color: 'var(--severity-none)', fontSize: 12, fontFamily: 'var(--mono)' }}>200 OK</span>}
               </div>
 
-              <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+              <div style={{ height: 320, overflow: 'auto', background: 'var(--bg-base)', border: '1px solid var(--border)', padding: 12 }}>
                 {!result && !runError && !isRunning && (
-                  <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 13 }}>
-                    Click "Run Query" to execute against Subgraph Studio
-                  </div>
+                  <div className="text-muted text-xs font-mono">Click "Run query" to execute against Subgraph Studio</div>
                 )}
-                {isRunning && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-tertiary)', fontSize: 13 }}>
-                    <span className="loading-ring" style={{ borderTopColor: 'var(--accent)' }} />
-                    Executing live query...
-                  </div>
-                )}
-                {runError && (
-                  <div style={{
-                    background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)',
-                    borderRadius: 8, padding: 14, color: 'var(--red)', fontSize: 13, fontFamily: 'var(--mono)',
-                  }}>
-                    {runError}
-                  </div>
-                )}
+                {isRunning && <div className="text-muted text-xs font-mono">Executing live query...</div>}
+                {runError && <div style={{ color: 'var(--red)', fontSize: 12, fontFamily: 'var(--mono)' }}>{runError}</div>}
                 {result && (
-                  <pre
-                    style={{ fontFamily: 'var(--mono)', fontSize: 12.5, lineHeight: 1.7, color: 'var(--text-secondary)' }}
-                    dangerouslySetInnerHTML={{ __html: syntaxHighlight(result) }}
-                  />
+                  <pre style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--text-primary)' }}>
+                    {result}
+                  </pre>
                 )}
               </div>
             </div>

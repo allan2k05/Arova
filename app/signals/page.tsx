@@ -11,7 +11,6 @@ interface Signal {
   severity: Severity;
   category: Category;
   protocol: string;
-  protocolIcon: string;
   title: string;
   description: string;
   detectedAt: string;
@@ -26,9 +25,8 @@ const STATIC_SIGNALS: Signal[] = [
     severity: 'HIGH',
     category: 'Liquidity',
     protocol: 'Aave v3',
-    protocolIcon: '⚡',
-    title: 'Unusual TVL Drop Detected',
-    description: 'Total Value Locked dropped more than 12% over the last 24 hours — threshold breached.',
+    title: 'Unusual TVL drop detected',
+    description: 'Total value locked dropped more than 12% over the last 24 hours — threshold breached.',
     detectedAt: '2h ago',
     chain: 'Ethereum',
     metrics: [
@@ -43,15 +41,14 @@ const STATIC_SIGNALS: Signal[] = [
     severity: 'HIGH',
     category: 'Security',
     protocol: 'Uniswap v3',
-    protocolIcon: '🦄',
-    title: 'Flash Loan Volume Spike',
+    title: 'Flash loan volume spike',
     description: 'Flash loan volume is 8.3x the 7-day average — possible price manipulation or arbitrage event.',
     detectedAt: '45m ago',
     chain: 'Ethereum',
     metrics: [
-      { label: 'Flash Loan Vol', value: '$2.1B', change: '+726%', dir: 'up' },
-      { label: '7d Avg Flash Vol', value: '$254M' },
-      { label: '24h Fees', value: '$8.4M', change: '+312%', dir: 'up' },
+      { label: 'Flash loan vol', value: '$2.1B', change: '+726%', dir: 'up' },
+      { label: '7d avg flash vol', value: '$254M' },
+      { label: '24h fees', value: '$8.4M', change: '+312%', dir: 'up' },
     ],
     recommendation: 'Review oracle price feeds for any manipulation. Check if protocol-owned liquidity pools were targeted.',
   },
@@ -60,8 +57,7 @@ const STATIC_SIGNALS: Signal[] = [
     severity: 'MEDIUM',
     category: 'Market',
     protocol: 'Compound v3',
-    protocolIcon: '🏛️',
-    title: 'Supply APY Compression',
+    title: 'Supply APY compression',
     description: 'USDC supply APY compressed 42% over 48 hours, potentially indicating low demand from borrowers.',
     detectedAt: '6h ago',
     chain: 'Ethereum',
@@ -77,14 +73,13 @@ const STATIC_SIGNALS: Signal[] = [
     severity: 'MEDIUM',
     category: 'Liquidity',
     protocol: 'Balancer v2',
-    protocolIcon: '⚖️',
-    title: 'Pool Imbalance Detected',
+    title: 'Pool imbalance detected',
     description: 'The WETH/USDC/DAI pool weights deviated more than 15% from target, suggesting large directional trade.',
     detectedAt: '3h ago',
     chain: 'Ethereum',
     metrics: [
-      { label: 'WETH Weight', value: '38.2%', change: '-11.8%', dir: 'down' },
-      { label: 'Target Weight', value: '50%' },
+      { label: 'WETH weight', value: '38.2%', change: '-11.8%', dir: 'down' },
+      { label: 'Target weight', value: '50%' },
       { label: 'Pool TVL', value: '$84M', change: '-7.3%', dir: 'down' },
     ],
     recommendation: 'Pool rebalancing arbitrage is likely ongoing. Monitor for sustained impermanent loss exposure.',
@@ -94,14 +89,13 @@ const STATIC_SIGNALS: Signal[] = [
     severity: 'INFO',
     category: 'Smart Contract',
     protocol: 'Aave v3',
-    protocolIcon: '⚡',
-    title: 'Reserve Factor Updated',
+    title: 'Reserve factor updated',
     description: 'Governance proposal passed — WBTC reserve factor increased from 20% to 25%.',
     detectedAt: '12h ago',
     chain: 'Ethereum',
     metrics: [
-      { label: 'New Reserve Factor', value: '25%', change: '+5%', dir: 'up' },
-      { label: 'Prior Reserve Factor', value: '20%' },
+      { label: 'New reserve factor', value: '25%', change: '+5%', dir: 'up' },
+      { label: 'Prior reserve factor', value: '20%' },
     ],
     recommendation: 'Supply APY for WBTC will decrease slightly. Existing suppliers should review their expected yield.',
   },
@@ -125,9 +119,6 @@ export default function SignalsPage() {
   const medCount    = STATIC_SIGNALS.filter(s => s.severity === 'MEDIUM').length;
   const infoCount   = STATIC_SIGNALS.filter(s => s.severity === 'INFO').length;
 
-  const sevColor = (s: Severity) =>
-    s === 'HIGH' ? 'var(--red)' : s === 'MEDIUM' ? 'var(--amber)' : 'var(--green)';
-
   const catLabel = ['All', 'Security', 'Liquidity', 'Market', 'Smart Contract'] as const;
 
   return (
@@ -135,69 +126,64 @@ export default function SignalsPage() {
       <div className="topbar">
         <span className="topbar-breadcrumb">Explore</span>
         <span className="topbar-divider">/</span>
-        <span className="topbar-title">Risk Signals</span>
-        <div className="topbar-actions">
-          <span className="badge badge-red">{highCount} HIGH</span>
-          <span className="badge badge-amber">{medCount} MED</span>
-          <span className="badge badge-green">{infoCount} INFO</span>
-        </div>
+        <span className="topbar-title">Risk signals</span>
       </div>
 
       <div className="page-content">
         <div className="page-header">
-          <h1 className="page-title">Risk & Security Signals</h1>
+          <h1 className="page-title">Risk & security signals</h1>
           <p className="page-subtitle">
             Real-time anomaly detection across monitored DeFi protocols via The Graph subgraph analytics.
           </p>
         </div>
 
-        {/* Summary cards */}
-        <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px,1fr))', marginBottom: 24 }}>
-          <div className="stat-card accent-red">
-            <div className="stat-label">High Severity</div>
-            <div className="stat-value red">{highCount}</div>
-            <div className="stat-sub">Immediate attention</div>
+        {/* Financial Terminal Metrics Strip */}
+        <div className="top-metrics-strip mb-6">
+          <div className="metric-segment">
+            <div className="metric-segment-label">High severity</div>
+            <div className="metric-segment-value" style={{ color: 'var(--severity-high)' }}>{highCount}</div>
           </div>
-          <div className="stat-card accent-amber">
-            <div className="stat-label">Medium Severity</div>
-            <div className="stat-value amber">{medCount}</div>
-            <div className="stat-sub">Monitor closely</div>
+          <div className="metric-segment">
+            <div className="metric-segment-label">Medium severity</div>
+            <div className="metric-segment-value" style={{ color: 'var(--severity-medium)' }}>{medCount}</div>
           </div>
-          <div className="stat-card accent-green">
-            <div className="stat-label">Informational</div>
-            <div className="stat-value green">{infoCount}</div>
-            <div className="stat-sub">Awareness</div>
+          <div className="metric-segment">
+            <div className="metric-segment-label">Informational</div>
+            <div className="metric-segment-value" style={{ color: 'var(--severity-none)' }}>{infoCount}</div>
           </div>
-          <div className="stat-card accent-blue">
-            <div className="stat-label">Protocols Monitored</div>
-            <div className="stat-value blue">4</div>
-            <div className="stat-sub">Updated live</div>
+          <div className="metric-segment">
+            <div className="metric-segment-label">Protocols monitored</div>
+            <div className="metric-segment-value">4</div>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="filter-bar">
-          {(['ALL', 'HIGH', 'MEDIUM', 'INFO'] as const).map(s => (
-            <button
-              key={s}
-              className={`filter-btn${severityFilter === s ? ' active' : ''}`}
-              onClick={() => setSeverityFilter(s)}
-            >
-              {s === 'ALL' ? `All (${STATIC_SIGNALS.length})` : s}
-            </button>
-          ))}
+        {/* Filter Bar */}
+        <div className="card mb-4" style={{ padding: 14 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            {(['ALL', 'HIGH', 'MEDIUM', 'INFO'] as const).map(s => (
+              <button
+                key={s}
+                className={`btn btn-sm ${severityFilter === s ? 'btn-primary' : 'btn-outline'}`}
+                style={{ fontSize: 11, padding: '4px 10px' }}
+                onClick={() => setSeverityFilter(s)}
+              >
+                {s === 'ALL' ? `All (${STATIC_SIGNALS.length})` : s}
+              </button>
+            ))}
 
-          <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+            <div style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
 
-          {catLabel.map(c => (
-            <button
-              key={c}
-              className={`filter-btn${categoryFilter === c ? ' active' : ''}`}
-              onClick={() => setCategoryFilter(c as typeof categoryFilter)}
-            >
-              {c}
-            </button>
-          ))}
+            {catLabel.map(c => (
+              <button
+                key={c}
+                className={`btn btn-sm ${categoryFilter === c ? 'btn-primary' : 'btn-outline'}`}
+                style={{ fontSize: 11, padding: '4px 10px' }}
+                onClick={() => setCategoryFilter(c as typeof categoryFilter)}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Signal list */}
@@ -207,76 +193,49 @@ export default function SignalsPage() {
             return (
               <div
                 key={sig.id}
-                className={`signal-card sev-${sig.severity}`}
-                style={{ cursor: 'pointer' }}
+                className="card"
+                style={{
+                  borderLeft: `3px solid ${sig.severity === 'HIGH' ? 'var(--severity-high)' : sig.severity === 'MEDIUM' ? 'var(--severity-medium)' : 'var(--severity-info)'}`,
+                  cursor: 'pointer',
+                }}
                 onClick={() => setExpanded(isOpen ? null : sig.id)}
               >
-                <div className="signal-top">
-                  <div style={{ flex: 1 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: 6 }}>
-                      <span style={{ fontSize: 15 }}>{sig.protocolIcon}</span>
-                      <span className="badge badge-neutral">{sig.protocol}</span>
-                      <span className={`badge ${sig.severity === 'HIGH' ? 'badge-red' : sig.severity === 'MEDIUM' ? 'badge-amber' : 'badge-green'}`}>
-                        {sig.severity}
-                      </span>
-                      <span className="badge badge-blue">{sig.category}</span>
-                      <span className="text-xs text-muted" style={{ marginLeft: 'auto' }}>{sig.detectedAt} · {sig.chain}</span>
-                    </div>
-                    <div className="signal-title">{sig.title}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <span className="font-mono text-xs text-muted">{sig.protocol}</span>
+                    <span className="font-mono text-xs" style={{ color: sig.severity === 'HIGH' ? 'var(--severity-high)' : sig.severity === 'MEDIUM' ? 'var(--severity-medium)' : 'var(--severity-info)' }}>
+                      [{sig.severity}]
+                    </span>
+                    <span className="text-xs text-muted">{sig.category}</span>
                   </div>
-                  <svg
-                    width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                    style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: 'var(--text-tertiary)', flexShrink: 0 }}
-                  >
-                    <polyline points="6 9 12 15 18 9"/>
-                  </svg>
+                  <span className="text-xs text-muted font-mono">{sig.detectedAt} · {sig.chain}</span>
                 </div>
 
-                <p className="signal-desc">{sig.description}</p>
+                <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{sig.title}</div>
+                <p className="text-sm text-muted" style={{ lineHeight: 1.5 }}>{sig.description}</p>
 
                 {isOpen && (
-                  <>
-                    <div className="signal-metrics">
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', gap: 16, marginBottom: 12, flexWrap: 'wrap' }}>
                       {sig.metrics.map((m, i) => (
-                        <div key={i} className="metric-chip">
-                          <div className="metric-chip-label">{m.label}</div>
-                          <div className="metric-chip-val">
-                            {m.value}
-                            {m.change && (
-                              <span className={`metric-delta ${m.dir === 'down' ? 'neg' : 'pos'}`}>{m.change}</span>
-                            )}
+                        <div key={i} style={{ borderLeft: '1px solid var(--border)', paddingLeft: 10 }}>
+                          <div className="text-xs text-muted">{m.label}</div>
+                          <div className="font-mono" style={{ fontSize: 14, fontWeight: 600 }}>
+                            {m.value} {m.change && <span style={{ color: m.dir === 'down' ? 'var(--severity-high)' : 'var(--severity-none)', fontSize: 12 }}>({m.change})</span>}
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="ai-box">
-                      <div className="ai-box-header">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        Recommended Action
-                      </div>
-                      <p className="ai-box-text">{sig.recommendation}</p>
+                    <div style={{ background: 'var(--bg-base)', border: '1px solid var(--border)', padding: 12 }}>
+                      <div className="text-xs font-mono mb-1" style={{ color: 'var(--accent)' }}>RECOMMENDED ACTION</div>
+                      <div className="text-xs text-muted" style={{ lineHeight: 1.5 }}>{sig.recommendation}</div>
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             );
           })}
-
-          {filtered.length === 0 && (
-            <div className="card">
-              <div className="empty-state">
-                <div className="empty-state-icon" style={{ color: 'var(--green)' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-                  </svg>
-                </div>
-                <div className="empty-state-title">No signals match</div>
-                <div className="empty-state-desc">Try adjusting severity or category filters.</div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </AppShell>
