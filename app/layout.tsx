@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'AROVA | DeFi Intelligence Agent',
-  description: 'Proactive AI agent monitoring DeFi protocols via The Graph standardized subgraphs',
+  title: 'Arova | DeFi Intelligence Platform',
+  description: 'Real-time DeFi protocol intelligence powered by The Graph subgraphs and Gemini AI',
 }
 
 export default function RootLayout({
@@ -14,9 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <main className="container">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   )
