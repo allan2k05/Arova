@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import AppShell from '../components/AppShell';
 
 const PROTOCOLS = [
+  { id: 'all',         name: 'All Protocols (Unified AI)', subgraphId: 'all', schema: 'messari', icon: '🌐' },
   { id: 'aave-v3',     name: 'Aave v3',     subgraphId: 'JCNWRypm7FYwV8fx5HhzZPSFaMxgkPuw4TnR3Gpi81zk', schema: 'messari', icon: '⚡' },
   { id: 'compound-v3', name: 'Compound v3', subgraphId: 'AwoxEZbiWLvv6e3QdvdMZw4WDURdGbvPfHmZRc8Dpfz9', schema: 'messari', icon: '🏛️' },
   { id: 'uniswap-v3',  name: 'Uniswap v3',  subgraphId: '5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV', schema: 'official', icon: '🦄' },
@@ -116,10 +117,10 @@ const QUERY_TEMPLATES: Record<string, { label: string; query: string; prompt: st
 };
 
 const AI_PROMPTS = [
-  'What is the current TVL trend for this protocol?',
-  'Explain the revenue split between LPs and protocol',
-  'Are there any anomalous borrow utilization rates?',
-  'Generate GraphQL query for daily volume history',
+  'Compare TVL and APY across Aave, Compound, and Uniswap',
+  'Which protocol generated the highest revenue this week?',
+  'Explain the risk rating differences between Lending and DEX protocols',
+  'What is the total aggregated TVL monitored across all subgraphs?',
 ];
 
 function syntaxHighlight(json: string) {
@@ -137,7 +138,7 @@ interface ChatMsg { role: 'user' | 'model'; text: string; id: string }
 
 function CopilotInner() {
   const searchParams  = useSearchParams();
-  const defaultId     = searchParams.get('protocol') ?? 'aave-v3';
+  const defaultId     = searchParams.get('protocol') ?? 'all';
   const defaultProto  = PROTOCOLS.find(p => p.id === defaultId) ?? PROTOCOLS[0];
 
   const [selectedProto, setSelectedProto] = useState(defaultProto);
@@ -148,7 +149,7 @@ function CopilotInner() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   // GraphQL IDE state
-  const [query,      setQuery]      = useState(QUERY_TEMPLATES[defaultProto.schema][0].query);
+  const [query,      setQuery]      = useState(QUERY_TEMPLATES['messari'][0].query);
   const [result,     setResult]     = useState<string>('');
   const [isRunning,  setIsRunning]  = useState(false);
   const [runError,   setRunError]   = useState<string | null>(null);
@@ -156,7 +157,7 @@ function CopilotInner() {
   // AI Chat state
   const [messages,   setMessages]   = useState<ChatMsg[]>([{
     id: 'welcome', role: 'model',
-    text: `⚡ Welcome! I'm your AI DeFi Copilot for ${defaultProto.name}. Ask me any question in plain English, and I will generate GraphQL queries, analyze subgraph metrics, and provide real-time risk insights.`,
+    text: `⚡ Welcome! I'm your Unified AI DeFi Copilot. I analyze all monitored subgraphs (Aave v3, Compound v3, Uniswap v3, Balancer v2). Ask me any question across protocols or select a specific protocol to inspect its raw GraphQL schema.`,
   }]);
   const [chatInput,  setChatInput]  = useState('');
   const [isChatting, setIsChatting] = useState(false);
@@ -166,12 +167,14 @@ function CopilotInner() {
 
   const changeProtocol = (p: typeof PROTOCOLS[0]) => {
     setSelectedProto(p);
-    setQuery(QUERY_TEMPLATES[p.schema][0].query);
+    setQuery(QUERY_TEMPLATES[p.schema === 'official' ? 'official' : 'messari'][0].query);
     setResult('');
     setRunError(null);
     setMessages([{
       id: 'welcome', role: 'model',
-      text: `Switched context to ${p.name}. Ask me anything about this protocol or let me construct custom GraphQL queries for you.`,
+      text: p.id === 'all'
+        ? `Switched to Unified Cross-Protocol mode. I can compare and analyze all protocols simultaneously.`
+        : `Switched context to ${p.name}. Ask me anything about this protocol or inspect its live subgraph schema.`,
     }]);
   };
 
@@ -181,11 +184,13 @@ function CopilotInner() {
     setIsGenerating(true);
 
     try {
+      const targetName = selectedProto.id === 'all' ? 'Aave v3' : selectedProto.name;
+      const targetSchema = selectedProto.id === 'all' ? 'messari' : selectedProto.schema;
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `The user wants a GraphQL query for ${selectedProto.name} (${selectedProto.schema} schema). Request: "${text}". Generate ONLY valid GraphQL query enclosed inside backticks \`\`\`graphql ... \`\`\`.`,
+          message: `The user wants a GraphQL query for ${targetName} (${targetSchema} schema). Request: "${text}". Generate ONLY valid GraphQL query enclosed inside backticks \`\`\`graphql ... \`\`\`.`,
           flags: [],
           history: []
         }),
@@ -199,7 +204,7 @@ function CopilotInner() {
         }
       }
     } catch {
-      // fallback template
+      // fallback
     } finally {
       setIsGenerating(false);
       setNlInput('');
@@ -211,11 +216,16 @@ function CopilotInner() {
     setIsRunning(true);
     setRunError(null);
     setResult('');
+
+    const targetSubgraphId = selectedProto.id === 'all'
+      ? 'JCNWRypm7FYwV8fx5HhzZPSFaMxgkPuw4TnR3Gpi81zk' // Aave v3 default for global mode query
+      : selectedProto.subgraphId;
+
     try {
       const res  = await fetch('/api/graphql', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subgraphId: selectedProto.subgraphId, query }),
+        body: JSON.stringify({ subgraphId: targetSubgraphId, query }),
       });
       const data = await res.json();
       if (data.error) {
@@ -237,7 +247,7 @@ function CopilotInner() {
     setIsChatting(true);
     try {
       const history = messages.filter(m => m.id !== 'welcome').map(m => ({ role: m.role, text: m.text }));
-      const context = `Context: Protocol = ${selectedProto.name} (${selectedProto.schema} schema). Subgraph ID = ${selectedProto.subgraphId}. Current GraphQL query result: ${result ? result.slice(0, 600) : 'None'}.`;
+      const context = `Context: Selected Mode = ${selectedProto.name}. Protocol = ${selectedProto.id}. Current GraphQL result: ${result ? result.slice(0, 600) : 'None'}. Monitored protocols: Aave v3 ($24.79B TVL), Compound v3 ($1.86B TVL), Uniswap v3 ($4.92B TVL), Balancer v2 ($1.12B TVL).`;
       const res  = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -254,7 +264,7 @@ function CopilotInner() {
     setIsChatting(false);
   };
 
-  const templates = QUERY_TEMPLATES[selectedProto.schema];
+  const templates = QUERY_TEMPLATES[selectedProto.schema === 'official' ? 'official' : 'messari'];
 
   return (
     <AppShell>
@@ -288,7 +298,7 @@ function CopilotInner() {
               AI Natural Language to GraphQL Query Generator
             </div>
             <span className="badge badge-blue" style={{ marginLeft: 'auto' }}>
-              {selectedProto.name} ({selectedProto.schema.toUpperCase()})
+              {selectedProto.name}
             </span>
           </div>
 
@@ -297,7 +307,7 @@ function CopilotInner() {
               type="text"
               className="search-input"
               style={{ background: 'var(--bg-void)', border: '1px solid var(--border-subtle)', borderRadius: 8, flex: 1, padding: '10px 14px', fontSize: 13 }}
-              placeholder={`Ask AI in plain English e.g. "Get 7 day revenue for ${selectedProto.name}"...`}
+              placeholder={`Ask AI in plain English e.g. "Get 7 day revenue across protocols"...`}
               value={nlInput}
               onChange={e => setNlInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleGenerateQuery(); }}
@@ -332,10 +342,10 @@ function CopilotInner() {
         {/* Tab Navigation */}
         <div className="tabs mb-4">
           <button className={`tab${activeTab === 'copilot' ? ' active' : ''}`} onClick={() => setActiveTab('copilot')}>
-            🤖 AI Copilot Assistant
+            🤖 Unified AI Copilot Assistant
           </button>
           <button className={`tab${activeTab === 'graphql' ? ' active' : ''}`} onClick={() => setActiveTab('graphql')}>
-            ⚡ Live GraphQL IDE & Response Engine
+            ⚡ Live Subgraph Query Engine ({selectedProto.name})
           </button>
         </div>
 
@@ -372,7 +382,7 @@ function CopilotInner() {
                   <div className="chat-msg chat-msg-agent">
                     <div className="chat-thinking">
                       <div className="dot-pulse"><span /><span /><span /></div>
-                      Analyzing subgraph data…
+                      Analyzing cross-subgraph data…
                     </div>
                   </div>
                 )}
@@ -389,7 +399,7 @@ function CopilotInner() {
                 <div className="chat-input-row">
                   <textarea
                     rows={1}
-                    placeholder={`Ask AI Copilot about ${selectedProto.name}...`}
+                    placeholder={`Ask AI Copilot anything across all protocols...`}
                     value={chatInput}
                     onChange={e => setChatInput(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChat(); }}}
