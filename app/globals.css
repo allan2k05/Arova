@@ -1,11 +1,11 @@
 /* ============================================================
    AROVA — Financial Terminal Design System
-   Refined according to arova-design-spec.md
+   Custom Palette: #800020, #FFCE1B, #A52A2A, #BE5103
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Financial Terminal Color Palette */
+  /* Base Dark Terminal Environment */
   --bg-base: #0B0C0E;        /* page background */
   --bg-panel: #151619;       /* cards/panels/sidebar */
   --bg-elevated: #1B1D21;    /* hover states, active rows */
@@ -15,19 +15,30 @@
   --text-muted: #8B8F97;
   --text-dim: #5A5D64;       /* least important text, timestamps */
 
-  --accent: #E8A33D;         /* amber brand accent */
-  --accent-dim: #4A3B1F;     /* amber subtle background tint */
+  /* Exact User Color Palette Swatch */
+  --color-burgundy: #800020;    /* #800020 Deep Burgundy */
+  --color-gold: #FFCE1B;        /* #FFCE1B Vibrant Gold */
+  --color-terracotta: #A52A2A;  /* #A52A2A Terracotta Red */
+  --color-rust: #BE5103;        /* #BE5103 Burnt Rust Orange */
 
-  /* Severity / Semantic Colors */
-  --severity-high: #E5484D;
-  --severity-medium: #E8A33D;  /* reuses brand accent */
-  --severity-info: #5B8DEF;
-  --severity-none: #3A9D6F;    /* muted green for standby/no issues */
+  /* Semantic Brand Mapping */
+  --accent: #FFCE1B;             /* Primary Gold Accent (#FFCE1B) */
+  --accent-secondary: #BE5103;   /* Secondary Rust Accent (#BE5103) */
+  --accent-burgundy: #800020;    /* Deep Accent (#800020) */
+  --accent-terracotta: #A52A2A;  /* Warning/Red Accent (#A52A2A) */
+
+  --accent-dim: rgba(255, 206, 27, 0.12); /* Gold subtle background tint */
+
+  /* Severity / Semantic Colors mapped to palette */
+  --severity-high: #A52A2A;      /* Terracotta Red */
+  --severity-medium: #BE5103;    /* Burnt Rust Orange */
+  --severity-info: #FFCE1B;      /* Vibrant Gold */
+  --severity-none: #3A9D6F;      /* Muted green for clean status */
 
   --green: #3A9D6F;
-  --red: #E5484D;
-  --amber: #E8A33D;
-  --blue: #5B8DEF;
+  --red: #A52A2A;
+  --amber: #BE5103;
+  --gold: #FFCE1B;
 
   /* Typography */
   --font: 'Space Grotesk', -apple-system, sans-serif;
@@ -113,7 +124,7 @@ body {
 .sidebar-logo-mark {
   width: 28px;
   height: 28px;
-  background: var(--accent);
+  background: var(--color-gold);
   color: #000;
   display: flex;
   align-items: center;
@@ -133,7 +144,7 @@ body {
 
 .sidebar-tagline {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--color-gold);
   font-family: var(--mono);
   margin-top: 1px;
 }
@@ -179,10 +190,10 @@ body {
 }
 
 .nav-item.active {
-  color: var(--text-primary);
+  color: var(--color-gold);
   background: transparent;
-  border-left: 2px solid var(--accent);
-  padding-left: 18px;
+  border-left: 3px solid var(--color-gold);
+  padding-left: 17px;
 }
 
 .nav-item-icon {
@@ -192,7 +203,7 @@ body {
   flex-shrink: 0;
 }
 
-.nav-item.active .nav-item-icon { opacity: 1; color: var(--accent); }
+.nav-item.active .nav-item-icon { opacity: 1; color: var(--color-gold); }
 
 .sidebar-status {
   padding: 14px 20px;
@@ -217,7 +228,7 @@ body {
   flex-shrink: 0;
 }
 .status-dot.online { background: var(--severity-none); }
-.status-dot.idle { background: var(--accent); }
+.status-dot.idle { background: var(--color-gold); }
 
 /* ── Main Content Area ─────────────────────────────────────── */
 .main-content {
@@ -286,7 +297,7 @@ body {
   margin-top: 4px;
 }
 
-/* ── Financial Terminal Strip (Replaces 4 Floating Stat Cards) ── */
+/* ── Financial Terminal Strip ──────────────────────────────── */
 .top-metrics-strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -408,14 +419,14 @@ body {
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: var(--color-gold);
   color: #0B0C0E;
-  border-color: var(--accent);
+  border-color: var(--color-gold);
 }
 
 .btn-primary:hover {
-  background: #f0b24e;
-  border-color: #f0b24e;
+  background: #E5B810;
+  border-color: #E5B810;
 }
 
 .btn-outline {
@@ -426,7 +437,8 @@ body {
 
 .btn-outline:hover {
   background: var(--bg-elevated);
-  border-color: var(--text-muted);
+  border-color: var(--color-gold);
+  color: var(--color-gold);
 }
 
 .btn-ghost {
@@ -434,7 +446,7 @@ body {
 }
 
 .btn-ghost:hover {
-  color: var(--text-primary);
+  color: var(--color-gold);
   background: var(--bg-elevated);
 }
 
@@ -443,7 +455,7 @@ body {
   font-size: 12px;
 }
 
-/* ── Terminal Status Dots & Indicators ────────────────────── */
+/* ── Terminal Status Indicators ────────────────────────────── */
 .status-indicator {
   display: inline-flex;
   align-items: center;
@@ -500,7 +512,7 @@ body {
 .console-timestamp {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--text-dim);
+  color: var(--color-gold);
 }
 
 .console-text {
