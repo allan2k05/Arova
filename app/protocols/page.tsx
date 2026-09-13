@@ -258,9 +258,14 @@ export default function ProtocolsPage() {
                     </td>
                     <td><RiskBadge risk={p.risk} /></td>
                     <td>
-                      <Link href={`/copilot?protocol=${p.id}`} className="btn btn-ghost btn-sm">
-                        Query →
-                      </Link>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <Link href={`/protocols/${p.id}`} className="btn btn-outline btn-sm">
+                          Details →
+                        </Link>
+                        <Link href={`/copilot?protocol=${p.id}`} className="btn btn-ghost btn-sm">
+                          Query ⚡
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -284,7 +289,7 @@ export default function ProtocolsPage() {
                       {p.icon}
                     </div>
                     <div>
-                      <div className="protocol-name" style={{ fontSize: 14 }}>{p.name}</div>
+                      <Link href={`/protocols/${p.id}`} className="protocol-name" style={{ fontSize: 14, textDecoration: 'none' }}>{p.name}</Link>
                       <div className="protocol-chain">{p.chain}</div>
                     </div>
                   </div>
@@ -311,9 +316,14 @@ export default function ProtocolsPage() {
                     <span className={`badge ${p.category === 'Lending' ? 'badge-purple' : 'badge-cyan'}`}>{p.category}</span>
                     <span className={`badge ${p.schema === 'Messari' ? 'badge-blue' : 'badge-neutral'}`}>{p.schema}</span>
                   </div>
-                  <Link href={`/copilot?protocol=${p.id}`} className="btn btn-ghost btn-sm">
-                    Query →
-                  </Link>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <Link href={`/protocols/${p.id}`} className="btn btn-outline btn-sm">
+                      Details →
+                    </Link>
+                    <Link href={`/copilot?protocol=${p.id}`} className="btn btn-ghost btn-sm">
+                      Query ⚡
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
